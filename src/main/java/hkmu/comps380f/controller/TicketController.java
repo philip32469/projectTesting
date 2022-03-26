@@ -129,4 +129,66 @@ public class TicketController {
         }
         return new RedirectView("/ticket/list", true);
     }
+
+    @GetMapping("/{ticketId}/delete/{attachment:.+}")
+    public String deleteAttachment(@PathVariable("ticketId") long ticketId,
+            @PathVariable("attachment") String name) {
+        Ticket ticket = this.ticketDatabase.get(ticketId);
+        if (ticket != null) {
+            if (ticket.hasAttachment(name)) {
+                ticket.deleteAttachment(name);
+            }
+        }
+        return "redirect:/ticket/edit/" + ticketId;
+    }
+
+    @GetMapping("/edit/{ticketId}")
+    public ModelAndView showEdit(@PathVariable("ticketId") long ticketId) {
+        Ticket ticket = this.ticketDatabase.get(ticketId);
+        if (ticket == null) {
+            return new ModelAndView(new RedirectView("/ticket/list", true));
+        }
+        ModelAndView mav = new ModelAndView("edit");
+        mav.addObject("ticketId", Long.toString(ticketId));
+        mav.addObject("ticket", ticket);
+
+        Form ticketForm = new Form();
+        ticketForm.setCustomerName(ticket.getCustomerName());
+        ticketForm.setSubject(ticket.getSubject());
+        ticketForm.setBody(ticket.getBody());
+        mav.addObject("ticketForm", ticketForm);
+
+        return mav;
+    }
+
+    @PostMapping("/edit/{ticketId}")
+    public String edit(@PathVariable("ticketId") long ticketId, Form form)
+            throws IOException {
+        Ticket ticket = this.ticketDatabase.get(ticketId);
+        ticket.setCustomerName(form.getCustomerName());
+        ticket.setSubject(form.getSubject());
+        ticket.setBody(form.getBody());
+
+        for (MultipartFile filePart : form.getAttachments()) {
+            Attachment attachment = new Attachment();
+            attachment.setName(filePart.getOriginalFilename());
+            attachment.setMimeContentType(filePart.getContentType());
+            attachment.setContents(filePart.getBytes());
+            if (attachment.getName() != null && attachment.getName().length() > 0
+                    && attachment.getContents() != null && attachment.getContents().length > 0) {
+                ticket.addAttachment(attachment);
+            }
+        }
+        this.ticketDatabase.put(ticket.getId(), ticket);
+        return "redirect:/ticket/view/" + ticket.getId();
+    }
+
+    @GetMapping("/delete/{ticketId}")
+    public String deleteTicket(@PathVariable("ticketId") long ticketId) {
+        if (this.ticketDatabase.containsKey(ticketId)) {
+            this.ticketDatabase.remove(ticketId);
+        }
+        return "redirect:/ticket/list";
+    }
+
 }
