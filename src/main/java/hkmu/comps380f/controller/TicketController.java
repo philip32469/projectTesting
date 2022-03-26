@@ -4,6 +4,7 @@ import hkmu.comps380f.model.Attachment;
 import hkmu.comps380f.model.Ticket;
 import hkmu.comps380f.view.DownloadingView;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,20 +40,11 @@ public class TicketController {
 
     public static class Form {
 
-        private String customerName;
         private String subject;
         private String body;
         private List<MultipartFile> attachments;
 
-        // Getters and Setters of customerName, subject, body, attachments
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
+        // Getters and Setters of subject, body, attachments
         public String getSubject() {
             return subject;
         }
@@ -79,10 +71,10 @@ public class TicketController {
     }
 
     @PostMapping("/create")
-    public View create(Form form) throws IOException {
+    public View create(Form form, Principal principal) throws IOException {
         Ticket ticket = new Ticket();
         ticket.setId(this.getNextTicketId());
-        ticket.setCustomerName(form.getCustomerName());
+        ticket.setCustomerName(principal.getName());
         ticket.setSubject(form.getSubject());
         ticket.setBody(form.getBody());
 
@@ -153,7 +145,6 @@ public class TicketController {
         mav.addObject("ticket", ticket);
 
         Form ticketForm = new Form();
-        ticketForm.setCustomerName(ticket.getCustomerName());
         ticketForm.setSubject(ticket.getSubject());
         ticketForm.setBody(ticket.getBody());
         mav.addObject("ticketForm", ticketForm);
@@ -165,7 +156,6 @@ public class TicketController {
     public String edit(@PathVariable("ticketId") long ticketId, Form form)
             throws IOException {
         Ticket ticket = this.ticketDatabase.get(ticketId);
-        ticket.setCustomerName(form.getCustomerName());
         ticket.setSubject(form.getSubject());
         ticket.setBody(form.getBody());
 
