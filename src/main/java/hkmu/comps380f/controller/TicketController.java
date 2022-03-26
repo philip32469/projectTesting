@@ -8,6 +8,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -135,9 +136,12 @@ public class TicketController {
     }
 
     @GetMapping("/edit/{ticketId}")
-    public ModelAndView showEdit(@PathVariable("ticketId") long ticketId) {
+    public ModelAndView showEdit(@PathVariable("ticketId") long ticketId,
+            Principal principal, HttpServletRequest request) {
         Ticket ticket = this.ticketDatabase.get(ticketId);
-        if (ticket == null) {
+        if (ticket == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+                && !principal.getName().equals(ticket.getCustomerName()))) {
             return new ModelAndView(new RedirectView("/ticket/list", true));
         }
         ModelAndView mav = new ModelAndView("edit");
@@ -153,9 +157,15 @@ public class TicketController {
     }
 
     @PostMapping("/edit/{ticketId}")
-    public String edit(@PathVariable("ticketId") long ticketId, Form form)
+    public String edit(@PathVariable("ticketId") long ticketId, Form form,
+            Principal principal, HttpServletRequest request)
             throws IOException {
         Ticket ticket = this.ticketDatabase.get(ticketId);
+        if (ticket == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+                && !principal.getName().equals(ticket.getCustomerName()))) {
+            return "redirect:/ticket/list";
+        }
         ticket.setSubject(form.getSubject());
         ticket.setBody(form.getBody());
 
