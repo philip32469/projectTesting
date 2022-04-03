@@ -1,14 +1,17 @@
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.exception.AttachmentNotFound;
+import hkmu.comps380f.exception.TicketNotFound;
 import hkmu.comps380f.model.Attachment;
 import hkmu.comps380f.model.Ticket;
+import hkmu.comps380f.service.AttachmentService;
+import hkmu.comps380f.service.TicketService;
 import hkmu.comps380f.view.DownloadingView;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +27,16 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/ticket")
 public class TicketController {
 
-    private volatile long TICKET_ID_SEQUENCE = 1;
-    private Map<Long, Ticket> ticketDatabase = new ConcurrentHashMap<>();
+    @Autowired
+    private TicketService ticketService;
+
+    @Autowired
+    private AttachmentService attachmentService;
 
     // Controller methods, Form object, ...
-    @GetMapping(value = {"", "/list"})
+    @GetMapping({"", "/list"})
     public String list(ModelMap model) {
-        model.addAttribute("ticketDatabase", ticketDatabase);
+        model.addAttribute("ticketDatabase", ticketService.getTickets());
         return "list";
     }
 
@@ -72,39 +78,18 @@ public class TicketController {
     }
 
     @PostMapping("/create")
-    public View create(Form form, Principal principal) throws IOException {
-        Ticket ticket = new Ticket();
-        ticket.setId(this.getNextTicketId());
-        ticket.setCustomerName(principal.getName());
-        ticket.setSubject(form.getSubject());
-        ticket.setBody(form.getBody());
-
-        for (MultipartFile filePart : form.getAttachments()) {
-            Attachment attachment = new Attachment();
-            attachment.setName(filePart.getOriginalFilename());
-            attachment.setMimeContentType(filePart.getContentType());
-            attachment.setContents(filePart.getBytes());
-            if (attachment.getName() != null && attachment.getName().length() > 0
-                    && attachment.getContents() != null && attachment.getContents().length > 0) {
-                ticket.addAttachment(attachment);
-            }
-        }
-        this.ticketDatabase.put(ticket.getId(), ticket);
-        return new RedirectView("/ticket/view/" + ticket.getId(), true);
-    }
-
-    private synchronized long getNextTicketId() {
-        return this.TICKET_ID_SEQUENCE++;
+    public String create(Form form, Principal principal) throws IOException {
+        long ticketId = ticketService.createTicket(principal.getName(),
+                form.getSubject(), form.getBody(), form.getAttachments());
+        return "redirect:/ticket/view/" + ticketId;
     }
 
     @GetMapping("/view/{ticketId}")
-    public String view(@PathVariable("ticketId") long ticketId,
-            ModelMap model) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
+    public String view(@PathVariable("ticketId") long ticketId, ModelMap model) {
+        Ticket ticket = ticketService.getTicket(ticketId);
         if (ticket == null) {
             return "redirect:/ticket/list";
         }
-        model.addAttribute("ticketId", ticketId);
         model.addAttribute("ticket", ticket);
         return "view";
     }
@@ -112,82 +97,63 @@ public class TicketController {
     @GetMapping("/{ticketId}/attachment/{attachment:.+}")
     public View download(@PathVariable("ticketId") long ticketId,
             @PathVariable("attachment") String name) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
-        if (ticket != null) {
-            Attachment attachment = ticket.getAttachment(name);
-            if (attachment != null) {
-                return new DownloadingView(attachment.getName(),
-                        attachment.getMimeContentType(), attachment.getContents());
-            }
+
+        Attachment attachment = attachmentService.getAttachment(ticketId, name);
+        if (attachment != null) {
+            return new DownloadingView(attachment.getName(),
+                    attachment.getMimeContentType(), attachment.getContents());
         }
         return new RedirectView("/ticket/list", true);
     }
 
     @GetMapping("/{ticketId}/delete/{attachment:.+}")
     public String deleteAttachment(@PathVariable("ticketId") long ticketId,
-            @PathVariable("attachment") String name) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
-        if (ticket != null) {
-            if (ticket.hasAttachment(name)) {
-                ticket.deleteAttachment(name);
-            }
-        }
+            @PathVariable("attachment") String name) throws AttachmentNotFound {
+        ticketService.deleteAttachment(ticketId, name);
         return "redirect:/ticket/edit/" + ticketId;
     }
 
     @GetMapping("/edit/{ticketId}")
     public ModelAndView showEdit(@PathVariable("ticketId") long ticketId,
             Principal principal, HttpServletRequest request) {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
+        Ticket ticket = ticketService.getTicket(ticketId);
         if (ticket == null
                 || (!request.isUserInRole("ROLE_ADMIN")
                 && !principal.getName().equals(ticket.getCustomerName()))) {
             return new ModelAndView(new RedirectView("/ticket/list", true));
         }
-        ModelAndView mav = new ModelAndView("edit");
-        mav.addObject("ticketId", Long.toString(ticketId));
-        mav.addObject("ticket", ticket);
+
+        ModelAndView modelAndView = new ModelAndView("edit");
+        modelAndView.addObject("ticket", ticket);
 
         Form ticketForm = new Form();
         ticketForm.setSubject(ticket.getSubject());
         ticketForm.setBody(ticket.getBody());
-        mav.addObject("ticketForm", ticketForm);
+        modelAndView.addObject("ticketForm", ticketForm);
 
-        return mav;
+        return modelAndView;
     }
 
     @PostMapping("/edit/{ticketId}")
     public String edit(@PathVariable("ticketId") long ticketId, Form form,
             Principal principal, HttpServletRequest request)
-            throws IOException {
-        Ticket ticket = this.ticketDatabase.get(ticketId);
+            throws IOException, TicketNotFound {
+        Ticket ticket = ticketService.getTicket(ticketId);
         if (ticket == null
                 || (!request.isUserInRole("ROLE_ADMIN")
                 && !principal.getName().equals(ticket.getCustomerName()))) {
             return "redirect:/ticket/list";
         }
-        ticket.setSubject(form.getSubject());
-        ticket.setBody(form.getBody());
 
-        for (MultipartFile filePart : form.getAttachments()) {
-            Attachment attachment = new Attachment();
-            attachment.setName(filePart.getOriginalFilename());
-            attachment.setMimeContentType(filePart.getContentType());
-            attachment.setContents(filePart.getBytes());
-            if (attachment.getName() != null && attachment.getName().length() > 0
-                    && attachment.getContents() != null && attachment.getContents().length > 0) {
-                ticket.addAttachment(attachment);
-            }
-        }
-        this.ticketDatabase.put(ticket.getId(), ticket);
-        return "redirect:/ticket/view/" + ticket.getId();
+        ticketService.updateTicket(ticketId, form.getSubject(),
+                form.getBody(), form.getAttachments());
+        return "redirect:/ticket/view/" + ticketId;
     }
 
     @GetMapping("/delete/{ticketId}")
-    public String deleteTicket(@PathVariable("ticketId") long ticketId) {
-        if (this.ticketDatabase.containsKey(ticketId)) {
-            this.ticketDatabase.remove(ticketId);
-        }
+    public String deleteTicket(@PathVariable("ticketId") long ticketId)
+            throws TicketNotFound {
+        ticketService.delete(ticketId);
         return "redirect:/ticket/list";
     }
 
