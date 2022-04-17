@@ -1,17 +1,26 @@
-<%-- 
-    Document   : login
-    Created on : 2022年4月16日, 下午02:52:33
-    Author     : User
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Customer Support Login</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <c:if test="${param.error != null}">
+            <p>Login failed.</p>
+        </c:if>
+        <c:if test="${param.logout != null}">
+            <p>You have logged out.</p>
+        </c:if>
+        <h2>Customer Support Login</h2>
+        <form action="cslogin" method="POST">
+            <label for="username">Username:</label><br/>
+            <input type="text" id="username" name="username" /><br/><br/>
+            <label for="password">Password:</label><br/>
+            <input type="password" id="password" name="password" /><br/><br/>
+            <input type="checkbox" id="remember-me" name="remember-me" />
+            <label for="remember-me">Remember me</label><br/><br/>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="submit" value="Log In"/>
+             <a href="<c:url value="/registration" />">Registration</a>
+        </form>
     </body>
 </html>

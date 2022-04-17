@@ -1,8 +1,8 @@
-<%-- 
-    Document   : list
-    Created on : 2022年4月16日, 下午02:59:22
-    Author     : User
---%>
+<c:url var="logoutUrl" value="/logout"/>
+<form action="${logoutUrl}" method="post">
+ <input type="submit" value="Log out" />
+ <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+</form>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

@@ -1,28 +1,37 @@
 package test01.controller;
 
+import java.io.IOException;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import test01.dao.StudentInfoRepository;
+
+import test01.model.StudentInfo;
 
 @Controller
+//@RequestMapping("/ticket")
 public class StudentInfoController {
 
-
+    @Resource
+    StudentInfoRepository studentInfoRepository;
 
     @GetMapping("/registration")
     public ModelAndView Create() {
         return new ModelAndView("registration", "registrationForm", new Form());
     }
 
-public static class Form{
-    private String username;
-    private String password;
-    private String fullname;
-    private String phonenumber;
-    private String address;
+    public static class Form {
+
+        private String username;
+        private String password;
+        private String fullname;
+        private String phonenumber;
+        private String address;
 
         public String getUsername() {
             return username;
@@ -66,7 +75,9 @@ public static class Form{
     }
 
     @PostMapping("/registration")
-    public View Create(Form form) {
-        return new RedirectView("login",true);
+    public View Create(Form form) throws IOException {
+       StudentInfo student = new StudentInfo(form.getUsername(), form.getPassword(), form.getFullname(), form.getPhonenumber(), form.getAddress());
+        studentInfoRepository.save(student);
+        return new RedirectView("cslogin",true);
     }
 }

@@ -1,17 +1,49 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package test01.model;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class StudentInfo {
+@Entity
+@Table(name = "student")
+public class StudentInfo implements Serializable{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private int id;
+
 
     private String username;
     private String password;
     private String fullname;
     private String phonenumber;
     private String address;
+    private String userrole;
+
+    public StudentInfo() {
+    }
+
+    public StudentInfo(String username, String password, String fullname, String phonenumber, String address) {
+        this.username = username;
+        this.password = "{noop}" + password;
+        this.fullname = fullname;
+        this.phonenumber = phonenumber;
+        this.address = address;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -52,5 +84,13 @@ public class StudentInfo {
     public void setAddress(String address) {
         this.address = address;
     }
-    
+
+    public String getUserrole() {
+        return userrole;
+    }
+
+    public void setUserrole(String userrole) {
+        this.userrole = userrole;
+    }
+
 }

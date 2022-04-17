@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class IndexController {
 
-
     @GetMapping
     public String index() {
-        return "list";
+        return "login";
     }
 
-    @GetMapping("/login")
+
+    @GetMapping("/cslogin")
     public String login() {
         return "login";
     }
