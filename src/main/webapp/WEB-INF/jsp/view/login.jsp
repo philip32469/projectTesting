@@ -20,6 +20,7 @@
             <label for="remember-me">Remember me</label><br/><br/>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <input type="submit" value="Log In"/>
+            <a href="<c:url value="/registration" />">Registration</a>
         </form>
     </body>
 </html>
