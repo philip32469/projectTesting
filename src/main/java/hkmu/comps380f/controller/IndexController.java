@@ -9,7 +9,7 @@ public class IndexController {
     @GetMapping
     public String index() {
         //return "redirect:/ticket/list";
-        return "redirect:/testing/newjsp";
+        return "redirect:/lecture/pindex";
     }
 
     @GetMapping("/cslogin")
