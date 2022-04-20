@@ -1,17 +1,23 @@
-<%-- 
-    Document   : courseMaterial
-    Created on : 2022年4月20日, 下午12:14:24
-    Author     : User
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Customer Support</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <c:url var="logoutUrl" value="/cslogout"/>
+        <form action="${logoutUrl}" method="post">
+            <input type="submit" value="Log out" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+        <security:authorize access="hasRole('ADMIN')">    
+            <h2>Add Lecture Note</h2>
+            <form:form method="POST" enctype="multipart/form-data"
+                       modelAttribute="ticketForm">
+                <b>Attachments</b><br />
+                <input type="file" name="attachments" multiple="multiple" /><br /><br />
+                <input type="submit" value="Submit"/>
+            </form:form>
+        </security:authorize>
+
     </body>
 </html>

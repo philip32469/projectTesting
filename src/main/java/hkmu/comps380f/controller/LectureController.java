@@ -6,9 +6,12 @@ package hkmu.comps380f.controller;
 
 import hkmu.comps380f.dao.LectureListRepository;
 import hkmu.comps380f.model.LectureList;
+import hkmu.comps380f.service.LectureListService;
 import java.io.IOException;
 import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +26,12 @@ public class LectureController {
     @Resource
     LectureListRepository lectureListRepository;
 
+    @Autowired
+    private LectureListService lectureListService;
+
     @GetMapping({"", "/pindex"})
-    public String list() {
+    public String list(ModelMap model) {
+        model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "pindex";
     }
 
@@ -35,6 +42,7 @@ public class LectureController {
 
     public static class Form {
 
+        //比Lecturer用
         private String courseCode;
         private String courseName;
 
@@ -56,14 +64,14 @@ public class LectureController {
     }
 
     @PostMapping("/addlecture")
-    public View Create(Form form) throws IOException {
-        LectureList lecture = new LectureList(form.getCourseCode(), form.getCourseName());
-        lectureListRepository.save(lecture);
-        return new RedirectView("coursematerial", true);
+    public String Create(Form form) throws IOException {
+        String courseCode = lectureListService.addLectureList(form.courseCode, form.courseName);
+        return "redirect:/lecture/coursematerial/" + courseCode;
     }
 
-    @GetMapping("/coursematerial")
-    public String viewCourse() {
+    @GetMapping("/coursematerial/{courseCode}")
+    public String viewCourse(ModelMap model) {
+        model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "courseMaterial";
     }
 
