@@ -1,8 +1,17 @@
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.dao.PollingRepository;
+import hkmu.comps380f.model.Polling;
+import hkmu.comps380f.service.LectureListService;
+import hkmu.comps380f.service.PollingService;
+import java.io.IOException;
+import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -10,9 +19,22 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/polling")
 public class PollingController {
 
+    @Resource
+    PollingRepository pollingRepository;
+
+    @Autowired
+    private PollingService pollingService;
+
+//------------測試---------------------------
+    @Autowired
+    private LectureListService lectureListService;
+//---------------------------------------
+
     @GetMapping({"", "/pindex"})
-    public String list(ModelMap model) {
-        //model.addAttribute("lectureDatabase", lectureListService.getLectureList());
+    public String pollingList(ModelMap model) {
+        model.addAttribute("pollingDatabase", pollingService.getPollingList());
+//------------要加--------------------------
+        model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "pindex";
     }
 
@@ -69,4 +91,28 @@ public class PollingController {
             this.option4 = option4;
         }
     }
+
+    @PostMapping("/addpolling")
+    public String Create(Form form) throws IOException {
+        long pollingId = pollingService.addPolling(form.getQuestion(), form.getOption1(), form.getOption2(), form.getOption3(), form.getOption4());
+        return "redirect:/polling/pindex";
+    }
+//@GetMapping("/question{pollingId}")
+
+    @GetMapping("/{pollingId}")
+    public String viewQuestion(@PathVariable("pollingId") long pollingId, ModelMap model) {
+
+//---------------12:05------------------------
+        Polling polling = pollingService.getQuestion(pollingId);
+        if (polling == null) {
+            return "redirect:/ticket/list";
+        }
+//------------------------------------------------
+        //原本版本:model.addAttribute("pollingDatabase", pollingService.getPollingList());
+//test------------------------------------------------------------
+//------------------12:05改完好似有用(暫用12:05ver)
+        model.addAttribute("pollingDatabase", polling);
+        return "pollingPage";
+    }
+
 }

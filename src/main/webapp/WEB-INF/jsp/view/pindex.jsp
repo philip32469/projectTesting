@@ -42,14 +42,34 @@
             </c:otherwise>
 
         </c:choose>
-
+               
         <security:authorize access="hasRole('ADMIN')">    
             <a href="<c:url value="/polling/addpolling" />">Add Polling</a><br /><br />
         </security:authorize>
+        <c:choose>
+            <c:when test="${fn:length(pollingDatabase) == 0}">
+                <i>There are no lecture in the system.</i>
+            </c:when>
+                
+            <c:otherwise>
+                <c:forEach items="${pollingDatabase}" var="polling">
+                   Question ${polling.id}:
+                    <a href="<c:url value="/polling/${polling.id}" />">
+                        <c:out value="${polling.question}" /></a>
 
-        <security:authorize access="hasRole('LECTURER')">    
-            <br /><br /><a href="<c:url value="/lecture/addlecture" />">Add</a><br /><br />
-        </security:authorize>
+                    <security:authorize access="hasRole('ADMIN') or
+                                        principal.username=='${ticket.customerName}'">
+                        [<a href="<c:url value="/lecture" />">Edit</a>]
+                    </security:authorize>
+                    <security:authorize access="hasRole('ADMIN')">            
+                        [<a href="<c:url value="/ticket/delete/${ticket.id}" />">Delete</a>]
+                    </security:authorize>
+                    <br /><br />
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+
+
 
 
     </body>

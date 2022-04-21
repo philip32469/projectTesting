@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class LectureListService {
 
     @Resource
-    private LectureListRepository LectureListtRepo;
+    private LectureListRepository LectureListRepo;
 
     @Transactional
     public List<LectureList> getLectureList() {
-        return LectureListtRepo.findAll();
+        return LectureListRepo.findAll();
     }
 
     @Transactional
@@ -25,7 +25,7 @@ public class LectureListService {
         LectureList lectureList = new LectureList();
         lectureList.setCoursecode(courseCode);
         lectureList.setCoursename(courseName);
-        LectureList savedLectureList = LectureListtRepo.save(lectureList);
+        LectureList savedLectureList = LectureListRepo.save(lectureList);
         return savedLectureList.getCoursecode();
     }
 }

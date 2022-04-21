@@ -5,8 +5,8 @@
 package hkmu.comps380f.controller;
 
 import hkmu.comps380f.dao.LectureListRepository;
-import hkmu.comps380f.model.LectureList;
 import hkmu.comps380f.service.LectureListService;
+import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/lecture")
@@ -29,9 +27,16 @@ public class LectureController {
     @Autowired
     private LectureListService lectureListService;
 
+//關鍵
+   @Autowired
+    private PollingService pollingService;
+
     @GetMapping({"", "/pindex"})
     public String list(ModelMap model) {
         model.addAttribute("lectureDatabase", lectureListService.getLectureList());
+
+//關鍵
+        model.addAttribute("pollingDatabase", pollingService.getPollingList());
         return "pindex";
     }
 
@@ -61,6 +66,7 @@ public class LectureController {
         public void setCourseName(String courseName) {
             this.courseName = courseName;
         }
+
     }
 
     @PostMapping("/addlecture")
