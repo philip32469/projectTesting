@@ -12,14 +12,27 @@
 
         <h2>Question Page</h2>
 
-
-
-        好似work work 地<br /><br />
         ${pollingDatabase.question}<br /><br />
 
-        <input TYPE=checkbox> ${pollingDatabase.option1}<br /><br />
-        <input TYPE=checkbox> ${pollingDatabase.option2}<br /><br />
-        <input TYPE=checkbox> ${pollingDatabase.option3}<br /><br />
-        <input TYPE=checkbox> ${pollingDatabase.option4}<br /><br />
 
+        <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
+
+            <form:input type="submit" path="choice" value="A" />
+            <form:label path="choice">: ${pollingDatabase.option1}</form:label><br />
+
+            <form:input type="submit" path="choice" value="B" />
+            <form:label path="choice">: ${pollingDatabase.option2}</form:label><br />
+
+            <form:input type="submit" path="choice" value="C" />
+            <form:label path="choice">: ${pollingDatabase.option3}</form:label><br />
+
+            <form:input type="submit" path="choice" value="D" />
+            <form:label path="choice">: ${pollingDatabase.option4}</form:label><br />
+
+
+
+            <form:input type="hidden" path="questionRecord"  value="${pollingDatabase.question}"/><br /><br />
+
+        </form:form>
     </body>
+</html>

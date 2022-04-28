@@ -1,10 +1,14 @@
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.dao.PollingRecordRepository;
 import hkmu.comps380f.dao.PollingRepository;
 import hkmu.comps380f.model.Polling;
+import hkmu.comps380f.model.PollingRecord;
+
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
+import java.security.Principal;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +25,10 @@ public class PollingController {
 
     @Resource
     PollingRepository pollingRepository;
+
+//------------------28/4-----------------
+    @Resource
+    PollingRecordRepository pollingRecordRepository;
 
     @Autowired
     private PollingService pollingService;
@@ -50,6 +58,25 @@ public class PollingController {
         private String option2;
         private String option3;
         private String option4;
+
+        private String choice;
+        private String questionRecord;
+
+        public String getQuestionRecord() {
+            return questionRecord;
+        }
+
+        public void setQuestionRecord(String questionRecord) {
+            this.questionRecord = questionRecord;
+        }
+
+        public String getChoice() {
+            return choice;
+        }
+
+        public void setChoice(String choice) {
+            this.choice = choice;
+        }
 
         public String getQuestion() {
             return question;
@@ -99,7 +126,7 @@ public class PollingController {
     }
 //@GetMapping("/question{pollingId}")
 
-    @GetMapping("/{pollingId}")
+    /*@GetMapping("/{pollingId}")
     public String viewQuestion(@PathVariable("pollingId") long pollingId, ModelMap model) {
 
 //---------------12:05------------------------
@@ -113,6 +140,19 @@ public class PollingController {
 //------------------12:05改完好似有用(暫用12:05ver)
         model.addAttribute("pollingDatabase", polling);
         return "pollingPage";
+    }*/
+    @GetMapping("/{pollingId}")
+    public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model) {
+        Polling polling = pollingService.getQuestion(pollingId);
+        model.addAttribute("pollingDatabase", polling);
+        return new ModelAndView("pollingPage", "pollingForm", new Form());
+    }
+
+    @PostMapping("/{pollingId}")
+    public String polling(Form form, Principal principal) throws IOException {
+        PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
+        pollingRecordRepository.save(record);
+        return "redirect:/polling/pindex";
     }
 
 }
