@@ -42,7 +42,7 @@
             </c:otherwise>
 
         </c:choose>
-               
+
         <security:authorize access="hasRole('ADMIN')">    
             <a href="<c:url value="/polling/addpolling" />">Add Polling</a><br /><br />
         </security:authorize>
@@ -50,10 +50,10 @@
             <c:when test="${fn:length(pollingDatabase) == 0}">
                 <i>There are no lecture in the system.</i>
             </c:when>
-                
+
             <c:otherwise>
                 <c:forEach items="${pollingDatabase}" var="polling">
-                   Question ${polling.id}:
+                    Question ${polling.id}:
                     <a href="<c:url value="/polling/${polling.id}" />">
                         <c:out value="${polling.question}" /></a>
 
@@ -69,7 +69,5 @@
             </c:otherwise>
         </c:choose>
 
-
-
-
     </body>
+</html>

@@ -16,6 +16,16 @@ CREATE TABLE pollingRecord (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE pollingResult (
+    id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    question VARCHAR(255) DEFAULT NULL,
+    totalchoiceA INT DEFAULT 0,
+    totalchoiceB INT DEFAULT 0,
+    totalchoiceC INT DEFAULT 0,
+    totalchoiceD INT DEFAULT 0,
+    PRIMARY KEY (id)
+);
+
 
 
 

@@ -4,6 +4,7 @@
  */
 package hkmu.comps380f.model;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ public class PollingRecord {
     private String question;
     private String choice;
 
+
     public PollingRecord() {
     }
 
@@ -29,6 +31,7 @@ public class PollingRecord {
         this.username = username;
         this.question = question;
         this.choice = choice;
+
     }
 
     public long getId() {

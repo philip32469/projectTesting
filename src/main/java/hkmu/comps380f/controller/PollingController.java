@@ -2,13 +2,16 @@ package hkmu.comps380f.controller;
 
 import hkmu.comps380f.dao.PollingRecordRepository;
 import hkmu.comps380f.dao.PollingRepository;
+import hkmu.comps380f.dao.PollingResultRepository;
 import hkmu.comps380f.model.Polling;
 import hkmu.comps380f.model.PollingRecord;
+import hkmu.comps380f.model.PollingResult;
 
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
 import java.security.Principal;
+
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +32,10 @@ public class PollingController {
 //------------------28/4-----------------
     @Resource
     PollingRecordRepository pollingRecordRepository;
+
+    @Resource
+    PollingResultRepository pollingResultRepository;
+//---------------------------------------------------
 
     @Autowired
     private PollingService pollingService;
@@ -122,6 +129,11 @@ public class PollingController {
     @PostMapping("/addpolling")
     public String Create(Form form) throws IOException {
         long pollingId = pollingService.addPolling(form.getQuestion(), form.getOption1(), form.getOption2(), form.getOption3(), form.getOption4());
+
+//-------------------------試整result-------------------------------------------
+        PollingResult result = new PollingResult(form.getQuestion(), 0, 0, 0, 0);
+        pollingResultRepository.save(result);
+//------------------------------------------------------------------------------------------------------------
         return "redirect:/polling/pindex";
     }
 //@GetMapping("/question{pollingId}")
@@ -144,14 +156,66 @@ public class PollingController {
     @GetMapping("/{pollingId}")
     public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model) {
         Polling polling = pollingService.getQuestion(pollingId);
+
+//-----------------唔知polling list係空呢行有冇用,加住先-------------------------------
+        if (polling == null) {
+            return new ModelAndView("addPolling", "pollingForm", new Form());
+        }
+//------------------------------------------------------------------------------------------
         model.addAttribute("pollingDatabase", polling);
         return new ModelAndView("pollingPage", "pollingForm", new Form());
     }
 
     @PostMapping("/{pollingId}")
-    public String polling(Form form, Principal principal) throws IOException {
+    public String polling(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
+
+//---------------個"-2" 係因為database太hardcode冇對到,之後清空/re-build database,就整走個-2------------------------------
+//------------------------未知如果到時有del function 會唔會影響呢到--------------------
+        PollingResult updatedResult = pollingResultRepository.findById((pollingId)).orElse(null);
+        switch (form.getChoice()) {
+            case ("A"):
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+                int totalA = updatedResult.getTotalchoiceA() + 1;
+                updatedResult.setTotalchoiceA(totalA);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("B"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalB = updatedResult.getTotalchoiceB() + 1;
+                updatedResult.setTotalchoiceB(totalB);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("C"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalC = updatedResult.getTotalchoiceC() + 1;
+                updatedResult.setTotalchoiceC(totalC);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("D"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalD = updatedResult.getTotalchoiceD() + 1;
+                updatedResult.setTotalchoiceD(totalD);
+                pollingResultRepository.save(updatedResult);
+                break;
+            default:
+                break;
+        }
         return "redirect:/polling/pindex";
     }
 
