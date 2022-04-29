@@ -242,11 +242,11 @@ public class PollingController {
     }
 //========================comment===========================================
 
-    /*@PostMapping(value = "/{pollingId}", params = "comment")
+    @PostMapping(value = "/{pollingId}", params = "comment")
     public String comment(Form form, Principal principal) {
 
         PollingComment comment = new PollingComment(form.getQuestionRecord(), principal.getName(), form.getComment());
         pollingCommentRepository.save(comment);
         return "redirect:/polling/pindex";
-    }*/
+    }
 }
