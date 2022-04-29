@@ -10,6 +10,7 @@ import hkmu.comps380f.model.PollingRecord;
 import hkmu.comps380f.model.PollingResult;
 
 import hkmu.comps380f.service.LectureListService;
+import hkmu.comps380f.service.PollingCommentService;
 import hkmu.comps380f.service.PollingResultService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
@@ -48,6 +49,9 @@ public class PollingController {
 
     @Autowired
     private PollingResultService pollingResultService;
+
+    @Autowired
+    private PollingCommentService pollingCommentService;
 //------------測試---------------------------
     @Autowired
     private LectureListService lectureListService;
@@ -184,9 +188,9 @@ public class PollingController {
 //------------------------------------------------------------------------------------------
         model.addAttribute("pollingDatabase", polling);
         model.addAttribute("pollingResultDatabase", result);
+        model.addAttribute("commentDatabase", pollingCommentService.getCommentList());
         return new ModelAndView("pollingPage", "pollingForm", new Form());
     }
-
 
 //========================================================
     @PostMapping(value = "/{pollingId}")
