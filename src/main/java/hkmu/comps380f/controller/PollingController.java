@@ -1,13 +1,16 @@
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.dao.PollingCommentRepository;
 import hkmu.comps380f.dao.PollingRecordRepository;
 import hkmu.comps380f.dao.PollingRepository;
 import hkmu.comps380f.dao.PollingResultRepository;
 import hkmu.comps380f.model.Polling;
+import hkmu.comps380f.model.PollingComment;
 import hkmu.comps380f.model.PollingRecord;
 import hkmu.comps380f.model.PollingResult;
 
 import hkmu.comps380f.service.LectureListService;
+import hkmu.comps380f.service.PollingResultService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
 import java.security.Principal;
@@ -35,11 +38,16 @@ public class PollingController {
 
     @Resource
     PollingResultRepository pollingResultRepository;
+
+    @Resource
+    PollingCommentRepository pollingCommentRepository;
 //---------------------------------------------------
 
     @Autowired
     private PollingService pollingService;
 
+    @Autowired
+    private PollingResultService pollingResultService;
 //------------測試---------------------------
     @Autowired
     private LectureListService lectureListService;
@@ -68,6 +76,17 @@ public class PollingController {
 
         private String choice;
         private String questionRecord;
+
+//--------------for comment用-------------------
+        private String comment;
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
 
         public String getQuestionRecord() {
             return questionRecord;
@@ -156,6 +175,7 @@ public class PollingController {
     @GetMapping("/{pollingId}")
     public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model) {
         Polling polling = pollingService.getQuestion(pollingId);
+        PollingResult result = pollingResultService.getQuestionRecord(pollingId);
 
 //-----------------唔知polling list係空呢行有冇用,加住先-------------------------------
         if (polling == null) {
@@ -163,17 +183,19 @@ public class PollingController {
         }
 //------------------------------------------------------------------------------------------
         model.addAttribute("pollingDatabase", polling);
+        model.addAttribute("pollingResultDatabase", result);
         return new ModelAndView("pollingPage", "pollingForm", new Form());
     }
 
-    @PostMapping("/{pollingId}")
+
+//========================================================
+    @PostMapping(value = "/{pollingId}")
     public String polling(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
 
-//---------------個"-2" 係因為database太hardcode冇對到,之後清空/re-build database,就整走個-2------------------------------
 //------------------------未知如果到時有del function 會唔會影響呢到--------------------
-        PollingResult updatedResult = pollingResultRepository.findById((pollingId)).orElse(null);
+        PollingResult updatedResult = pollingResultRepository.findById(pollingId).orElse(null);
         switch (form.getChoice()) {
             case ("A"):
                 /*if (updatedResult == null) {
@@ -218,5 +240,13 @@ public class PollingController {
         }
         return "redirect:/polling/pindex";
     }
+//========================comment===========================================
 
+    /*@PostMapping(value = "/{pollingId}", params = "comment")
+    public String comment(Form form, Principal principal) {
+
+        PollingComment comment = new PollingComment(form.getQuestionRecord(), principal.getName(), form.getComment());
+        pollingCommentRepository.save(comment);
+        return "redirect:/polling/pindex";
+    }*/
 }
