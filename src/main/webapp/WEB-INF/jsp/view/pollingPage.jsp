@@ -12,6 +12,19 @@
 
         <h2>Question Page</h2>
 
+        <c:forEach items="${votedUserDatabase}" var="votedUser">
+            <c:choose>
+                <c:when test="${votedUser.question==pollingDatabase.question && votedUser.username==currentName}">
+                    Hello Phiilp<br />
+
+                </c:when>
+                <c:otherwise>
+
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+
+        ========================================================================================<br />
         ${pollingDatabase.question}<br /><br />
         <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
 
@@ -32,8 +45,6 @@
 
             Voting Statistics:<br />
             A:${pollingResultDatabase.totalchoiceA}  B:${pollingResultDatabase.totalchoiceB} C:${pollingResultDatabase.totalchoiceC} D:${pollingResultDatabase.totalchoiceD}<br />
-
-
 
         </form:form>
 
@@ -56,8 +67,6 @@
                 </c:when>
             </c:choose>
         </c:forEach>           
-
-
 
     </body>
 </html>

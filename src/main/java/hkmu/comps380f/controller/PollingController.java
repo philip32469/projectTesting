@@ -4,15 +4,18 @@ import hkmu.comps380f.dao.PollingCommentRepository;
 import hkmu.comps380f.dao.PollingRecordRepository;
 import hkmu.comps380f.dao.PollingRepository;
 import hkmu.comps380f.dao.PollingResultRepository;
+import hkmu.comps380f.dao.VotedUserRepository;
 import hkmu.comps380f.model.Polling;
 import hkmu.comps380f.model.PollingComment;
 import hkmu.comps380f.model.PollingRecord;
 import hkmu.comps380f.model.PollingResult;
+import hkmu.comps380f.model.VotedUser;
 
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingCommentService;
 import hkmu.comps380f.service.PollingResultService;
 import hkmu.comps380f.service.PollingService;
+import hkmu.comps380f.service.VotedUserService;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -42,8 +45,16 @@ public class PollingController {
 
     @Resource
     PollingCommentRepository pollingCommentRepository;
+
+//------------4/5 試整一人投一次
+    @Resource
+    VotedUserRepository votedUserRepository;
 //---------------------------------------------------
 
+//=================4/5=======================
+    @Autowired
+    private VotedUserService votedUserService;
+//===========================================
     @Autowired
     private PollingService pollingService;
 
@@ -177,9 +188,17 @@ public class PollingController {
         return "pollingPage";
     }*/
     @GetMapping("/{pollingId}")
-    public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model) {
+    public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model, Principal principal) {
         Polling polling = pollingService.getQuestion(pollingId);
         PollingResult result = pollingResultService.getQuestionRecord(pollingId);
+
+
+//===========4/5===============================================
+
+
+
+
+
 
 //-----------------唔知polling list係空呢行有冇用,加住先-------------------------------
         if (polling == null) {
@@ -189,6 +208,10 @@ public class PollingController {
         model.addAttribute("pollingDatabase", polling);
         model.addAttribute("pollingResultDatabase", result);
         model.addAttribute("commentDatabase", pollingCommentService.getCommentList());
+
+//=============================4/5========================
+        model.addAttribute("votedUserDatabase", votedUserService.getVotedUser());
+model.addAttribute("currentName", principal.getName());
         return new ModelAndView("pollingPage", "pollingForm", new Form());
     }
 
@@ -197,6 +220,10 @@ public class PollingController {
     public String polling(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
+
+//--------------------------------------------試整一人只可投一次------------------------------
+        VotedUser voteduser = new VotedUser(form.getQuestionRecord(), principal.getName());
+        votedUserRepository.save(voteduser);
 
 //------------------------未知如果到時有del function 會唔會影響呢到--------------------
         PollingResult updatedResult = pollingResultRepository.findById(pollingId).orElse(null);
