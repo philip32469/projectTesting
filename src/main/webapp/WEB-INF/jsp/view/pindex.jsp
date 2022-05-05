@@ -11,11 +11,7 @@
         </form>
 
         <h2>Index Page</h2>
-        <security:authorize access="hasRole('ADMIN')">    
-            <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
-        </security:authorize>
-
-        <security:authorize access="hasRole('ADMIN')">    
+        <security:authorize access="hasAnyRole('ADMIN', 'LECTURER')">   
             <a href="<c:url value="/lecture/addlecture" />">Add Lecture</a><br /><br />
         </security:authorize>
 
@@ -30,11 +26,11 @@
                     <a href="<c:url value="/lecture/coursematerial/${lecture.coursecode}" />">
                         <c:out value="${lecture.coursename}" /></a>
 
-                    <security:authorize access="hasRole('ADMIN') or
+                    <security:authorize access="hasRole('LECTURER') or
                                         principal.username=='${ticket.customerName}'">
                         [<a href="<c:url value="/lecture" />">Edit</a>]
                     </security:authorize>
-                    <security:authorize access="hasRole('ADMIN')">            
+                    <security:authorize access="hasRole('LECTURER')">            
                         [<a href="<c:url value="/ticket/delete/${ticket.id}" />">Delete</a>]
                     </security:authorize>
                     <br /><br />
@@ -43,7 +39,7 @@
 
         </c:choose>
 
-        <security:authorize access="hasRole('ADMIN')">    
+        <security:authorize access="hasAnyRole('ADMIN', 'LECTURER')">   
             <a href="<c:url value="/polling/addpolling" />">Add Polling</a><br /><br />
         </security:authorize>
         <c:choose>
@@ -57,12 +53,12 @@
                     <a href="<c:url value="/polling/${polling.id}" />">
                         <c:out value="${polling.question}" /></a>
 
-                    <security:authorize access="hasRole('ADMIN') or
+                    <security:authorize access="hasRole('LECTURER') or
                                         principal.username=='${ticket.customerName}'">
                         [<a href="<c:url value="/lecture" />">Edit</a>]
                     </security:authorize>
-                    <security:authorize access="hasRole('ADMIN')">            
-                        [<a href="<c:url value="/ticket/delete/${ticket.id}" />">Delete</a>]
+                    <security:authorize access="hasRole('LECTURER')">            
+                        [<a href="<c:url value="/polling/delete/${polling.id}" />">Delete</a>]
                     </security:authorize>
                     <br /><br />
                 </c:forEach>

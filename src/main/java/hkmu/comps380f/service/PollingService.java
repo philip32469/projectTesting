@@ -19,6 +19,14 @@ public class PollingService {
         return PollingRepo.findAll();
     }
 
+    @Transactional
+    public void delete(long id) {
+        Polling deletedPolling = PollingRepo.findById(id).orElse(null);
+        /*if (deletedTicket == null) {
+            throw new TicketNotFound();
+        }*/
+        PollingRepo.delete(deletedPolling);
+    }
 
 //-----------------12:05 Testing--------------
 //想試拎到Question id

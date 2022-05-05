@@ -405,4 +405,10 @@ public class PollingController {
         return "redirect:/polling/pindex";
     }
 
+    @GetMapping("/delete/{pollingId}")
+    public String deleteTicket(@PathVariable("pollingId") long pollingId) {
+        pollingService.delete(pollingId);
+        return "redirect:/polling/pindex";
+    }
+
 }
