@@ -1,18 +1,21 @@
 package hkmu.comps380f.controller;
 
 import hkmu.comps380f.dao.PollingCommentRepository;
+import hkmu.comps380f.dao.PollingRealTimeRepository;
 import hkmu.comps380f.dao.PollingRecordRepository;
 import hkmu.comps380f.dao.PollingRepository;
 import hkmu.comps380f.dao.PollingResultRepository;
 import hkmu.comps380f.dao.VotedUserRepository;
 import hkmu.comps380f.model.Polling;
 import hkmu.comps380f.model.PollingComment;
+import hkmu.comps380f.model.PollingRealTime;
 import hkmu.comps380f.model.PollingRecord;
 import hkmu.comps380f.model.PollingResult;
 import hkmu.comps380f.model.VotedUser;
 
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingCommentService;
+import hkmu.comps380f.service.PollingRealTimeService;
 import hkmu.comps380f.service.PollingResultService;
 import hkmu.comps380f.service.PollingService;
 import hkmu.comps380f.service.VotedUserService;
@@ -41,6 +44,9 @@ public class PollingController {
     PollingRecordRepository pollingRecordRepository;
 
     @Resource
+    PollingRealTimeRepository pollingRealTimeRepository;
+
+    @Resource
     PollingResultRepository pollingResultRepository;
 
     @Resource
@@ -54,6 +60,9 @@ public class PollingController {
 //=================4/5=======================
     @Autowired
     private VotedUserService votedUserService;
+
+    @Autowired
+    private PollingRealTimeService pollingRealTimeService;
 //===========================================
     @Autowired
     private PollingService pollingService;
@@ -191,14 +200,7 @@ public class PollingController {
     public ModelAndView polling(@PathVariable("pollingId") long pollingId, ModelMap model, Principal principal) {
         Polling polling = pollingService.getQuestion(pollingId);
         PollingResult result = pollingResultService.getQuestionRecord(pollingId);
-
-
-//===========4/5===============================================
-
-
-
-
-
+        PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), polling.getQuestion());
 
 //-----------------唔知polling list係空呢行有冇用,加住先-------------------------------
         if (polling == null) {
@@ -210,8 +212,9 @@ public class PollingController {
         model.addAttribute("commentDatabase", pollingCommentService.getCommentList());
 
 //=============================4/5========================
-        model.addAttribute("votedUserDatabase", votedUserService.getVotedUser());
-model.addAttribute("currentName", principal.getName());
+        //model.addAttribute("votedUserDatabase", votedUserService.getVotedUser());
+        model.addAttribute("currentName", principal.getName());
+        model.addAttribute("realTimeDatabase", recordRealTime);
         return new ModelAndView("pollingPage", "pollingForm", new Form());
     }
 
@@ -220,6 +223,9 @@ model.addAttribute("currentName", principal.getName());
     public String polling(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
+
+        PollingRealTime realTimeRecord = new PollingRealTime(principal.getName(), form.getQuestionRecord(), form.getChoice());
+        pollingRealTimeRepository.save(realTimeRecord);
 
 //--------------------------------------------試整一人只可投一次------------------------------
         VotedUser voteduser = new VotedUser(form.getQuestionRecord(), principal.getName());
@@ -280,4 +286,33 @@ model.addAttribute("currentName", principal.getName());
         pollingCommentRepository.save(comment);
         return "redirect:/polling/pindex";
     }
+//============================4/5======================
+
+    @GetMapping("/edit/{pollingId}/{principal.getName()}")
+    public ModelAndView edit(@PathVariable("pollingId") long pollingId, ModelMap model, Principal principal) {
+
+        Polling polling = pollingService.getQuestion(pollingId);
+
+        PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), polling.getQuestion());
+        if (recordRealTime == null) {
+            model.addAttribute("pollingDatabase", polling);
+            return new ModelAndView("redirectToPolling", "redirect", new Form());
+        }
+
+        model.addAttribute("currentChoice", recordRealTime.getChoice());
+
+        model.addAttribute("pollingDatabase", polling);
+        return new ModelAndView("editPolling", "editForm", new Form());
+    }
+
+    @PostMapping("/edit/{pollingId}/{principal.getName()}")
+    public String edit(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
+        PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), form.questionRecord);
+        pollingRealTimeService.updatePollingRealTime(principal.getName(), form.getQuestionRecord(), form.getChoice());
+
+        PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
+        pollingRecordRepository.save(record);
+        return "redirect:/polling/pindex";
+    }
+
 }

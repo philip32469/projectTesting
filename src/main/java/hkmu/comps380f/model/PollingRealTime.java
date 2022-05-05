@@ -4,8 +4,6 @@
  */
 package hkmu.comps380f.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,25 +11,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "voteduser")
-public class VotedUser {
+@Table(name = "pollingrealtime")
+public class PollingRealTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String question;
-    private String username;
-    //private List<String> questionList = new ArrayList<>();
-    //private List<String> userList = new ArrayList<>();
 
-    public VotedUser() {
+    private String username;
+    private String question;
+    private String choice;
+
+    public PollingRealTime() {
     }
 
-    public VotedUser(String question, String username) {
-        this.question = question;
+    public PollingRealTime(String username, String question, String choice) {
         this.username = username;
-        //this.questionList.add(question);
-        //this.userList.add(question);
+        this.question = question;
+        this.choice = choice;
 
     }
 
@@ -43,14 +40,6 @@ public class VotedUser {
         this.id = id;
     }
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -59,4 +48,21 @@ public class VotedUser {
         this.username = username;
     }
 
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getChoice() {
+        return choice;
+    }
+
+    public void setChoice(String choice) {
+        this.choice = choice;
+    }
 }
+
+

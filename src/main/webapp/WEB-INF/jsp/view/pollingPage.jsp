@@ -11,42 +11,45 @@
         </form>
 
         <h2>Question Page</h2>
+        ${pollingDatabase.question}<br />
+        <c:choose>
+            <c:when test="${realTimeDatabase.username != null}">
+                You have voted!
+                <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
+                    <a href="<c:url value="/polling/edit/${pollingDatabase.id}/${currentName}" />">Edit Polling</a><br /><br />
+                </form:form>
+            </c:when>
+            <c:otherwise>
+                ${pollingDatabase.question}<br /><br />
+                <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
 
-        <c:forEach items="${votedUserDatabase}" var="votedUser">
-            <c:choose>
-                <c:when test="${votedUser.question==pollingDatabase.question && votedUser.username==currentName}">
-                    Hello Phiilp<br />
+                    <form:input type="submit" path="choice"  value="A" />
+                    <form:label path="choice">: ${pollingDatabase.option1}</form:label><br />
 
-                </c:when>
-                <c:otherwise>
 
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
+                    <form:input type="submit" path="choice"  value="B" />
+                    <form:label path="choice">: ${pollingDatabase.option2}</form:label><br />
 
+                    <form:input type="submit" path="choice" value="C" />
+                    <form:label path="choice">: ${pollingDatabase.option3}</form:label><br />
+
+                    <form:input type="submit" path="choice" value="D" />
+                    <form:label path="choice">: ${pollingDatabase.option4}</form:label><br />
+
+                    <form:input type="hidden" path="questionRecord"  value="${pollingDatabase.question}"/><br /><br /><br />
+
+
+                    <a href="<c:url value="/polling/edit/${pollingDatabase.id}/${currentName}" />">Edit Polling</a><br /><br />
+
+
+                    Voting Statistics:<br />
+                    A:${pollingResultDatabase.totalchoiceA}  B:${pollingResultDatabase.totalchoiceB} C:${pollingResultDatabase.totalchoiceC} D:${pollingResultDatabase.totalchoiceD}<br />
+
+                </form:form>
+            </c:otherwise>
+        </c:choose>
         ========================================================================================<br />
-        ${pollingDatabase.question}<br /><br />
-        <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
 
-            <form:input type="submit" path="choice"  value="A" />
-            <form:label path="choice">: ${pollingDatabase.option1}</form:label><br />
-
-
-            <form:input type="submit" path="choice"  value="B" />
-            <form:label path="choice">: ${pollingDatabase.option2}</form:label><br />
-
-            <form:input type="submit" path="choice" value="C" />
-            <form:label path="choice">: ${pollingDatabase.option3}</form:label><br />
-
-            <form:input type="submit" path="choice" value="D" />
-            <form:label path="choice">: ${pollingDatabase.option4}</form:label><br />
-
-            <form:input type="hidden" path="questionRecord"  value="${pollingDatabase.question}"/><br /><br /><br />
-
-            Voting Statistics:<br />
-            A:${pollingResultDatabase.totalchoiceA}  B:${pollingResultDatabase.totalchoiceB} C:${pollingResultDatabase.totalchoiceC} D:${pollingResultDatabase.totalchoiceD}<br />
-
-        </form:form>
 
 
         <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
