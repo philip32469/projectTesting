@@ -17,6 +17,8 @@
                 You have voted!
                 <form:form method="POST" enctype="multipart/form-data" modelAttribute="pollingForm">
                     <a href="<c:url value="/polling/edit/${pollingDatabase.id}/${currentName}" />">Edit Polling</a><br /><br />
+                    Voting Statistics:<br />
+                    A:${pollingResultDatabase.totalchoiceA}  B:${pollingResultDatabase.totalchoiceB} C:${pollingResultDatabase.totalchoiceC} D:${pollingResultDatabase.totalchoiceD}<br />
                 </form:form>
             </c:when>
             <c:otherwise>

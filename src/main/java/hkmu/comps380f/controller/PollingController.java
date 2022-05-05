@@ -307,8 +307,98 @@ public class PollingController {
 
     @PostMapping("/edit/{pollingId}/{principal.getName()}")
     public String edit(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
+
+        PollingResult updatedResult = pollingResultRepository.findById(pollingId).orElse(null);
+
         PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), form.questionRecord);
+
+        switch (recordRealTime.getChoice()) {
+            case ("A"):
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+                int totalA = updatedResult.getTotalchoiceA() - 1;
+                updatedResult.setTotalchoiceA(totalA);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("B"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalB = updatedResult.getTotalchoiceB() - 1;
+                updatedResult.setTotalchoiceB(totalB);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("C"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalC = updatedResult.getTotalchoiceC() - 1;
+                updatedResult.setTotalchoiceC(totalC);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("D"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalD = updatedResult.getTotalchoiceD() - 1;
+                updatedResult.setTotalchoiceD(totalD);
+                pollingResultRepository.save(updatedResult);
+                break;
+            default:
+                break;
+        }
+
         pollingRealTimeService.updatePollingRealTime(principal.getName(), form.getQuestionRecord(), form.getChoice());
+
+        switch (form.getChoice()) {
+            case ("A"):
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+                int totalA = updatedResult.getTotalchoiceA() + 1;
+                updatedResult.setTotalchoiceA(totalA);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("B"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalB = updatedResult.getTotalchoiceB() + 1;
+                updatedResult.setTotalchoiceB(totalB);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("C"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalC = updatedResult.getTotalchoiceC() + 1;
+                updatedResult.setTotalchoiceC(totalC);
+                pollingResultRepository.save(updatedResult);
+                break;
+            case ("D"):
+                //PollingResult updatedResult = pollingResultRepository.findById((pollingId-2)).orElse(null);
+                /*if (updatedResult == null) {
+                    throw new TicketNotFound();
+                }*/
+
+                int totalD = updatedResult.getTotalchoiceD() + 1;
+                updatedResult.setTotalchoiceD(totalD);
+                pollingResultRepository.save(updatedResult);
+                break;
+            default:
+                break;
+        }
 
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
