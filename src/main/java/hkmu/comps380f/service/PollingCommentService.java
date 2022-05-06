@@ -22,5 +22,19 @@ public class PollingCommentService {
     public List<PollingComment> getCommentList() {
         return pollingCommentRepo.findAll();
     }
+
+    @Transactional
+    public List<PollingComment> getCommentList2(String question) {
+        return pollingCommentRepo.findAllByQuestion(question);
+    }
+
+    @Transactional
+    public void delete(String username, String question) {
+        //PollingComment deletedPolling = pollingCommentRepo.findAllByUserNameAndQuestion(username, question);
+        /*if (deletedTicket == null) {
+            throw new TicketNotFound();
+        }*/
+        //PollingRepo.delete(deletedPolling);
+    }
     
 }
