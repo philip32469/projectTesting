@@ -65,5 +65,10 @@
             </c:otherwise>
         </c:choose>
 
+
+        <security:authorize access="hasRole('LECTURER')">   
+            <a href="<c:url value="/editUser" />">Edit User Information</a><br /><br />
+        </security:authorize>
+
     </body>
 </html>

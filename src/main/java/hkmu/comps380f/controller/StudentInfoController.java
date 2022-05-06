@@ -89,4 +89,27 @@ public class StudentInfoController {
         studentInfoRepository.save(student);
         return new RedirectView("cslogin", true);
     }
+
+    @GetMapping("/createStudent")
+    public ModelAndView CreateStudentByLecturer() {
+        return new ModelAndView("registration", "registrationForm", new Form());
+    }
+    @PostMapping("/createStudent")
+    public  String CreateStudentByLecturer(Form form) throws IOException {
+        StudentInfo student = new StudentInfo(form.getUsername(), form.getPassword(), form.getFullname(), form.getPhonenumber(), form.getAddress(), form.getUserrole());
+        studentInfoRepository.save(student);
+        return "redirect:/editUser";
+    }
+
+    @GetMapping("/createLecturer")
+    public ModelAndView CreateLecturerByLecturer() {
+        return new ModelAndView("createLecturer", "registrationForm", new Form());
+    }
+    @PostMapping("/createLecturer")
+    public  String CreateLecturerByLecturer(Form form) throws IOException {
+        StudentInfo student = new StudentInfo(form.getUsername(), form.getPassword(), form.getFullname(), form.getPhonenumber(), form.getAddress(), form.getUserrole());
+        studentInfoRepository.save(student);
+        return "redirect:/editUser";
+    }
+
 }

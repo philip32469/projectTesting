@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudentInfoService implements UserDetailsService {
@@ -34,5 +35,12 @@ public class StudentInfoService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(studentInfo.getUserrole()));
         //}
         return new User(studentInfo.getUsername(), studentInfo.getPassword(), authorities);
+    }
+
+
+
+    @Transactional
+    public List<StudentInfo> getUserList() {
+        return studentInfoRepo.findAll();
     }
 }
