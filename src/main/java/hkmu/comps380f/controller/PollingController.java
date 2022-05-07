@@ -36,20 +36,20 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/polling")
 public class PollingController {
-    
+
     @Resource
     PollingRepository pollingRepository;
 
 //------------------28/4-----------------
     @Resource
     PollingRecordRepository pollingRecordRepository;
-    
+
     @Resource
     PollingRealTimeRepository pollingRealTimeRepository;
-    
+
     @Resource
     PollingResultRepository pollingResultRepository;
-    
+
     @Resource
     PollingCommentRepository pollingCommentRepository;
 
@@ -61,16 +61,16 @@ public class PollingController {
 //=================4/5=======================
     @Autowired
     private VotedUserService votedUserService;
-    
+
     @Autowired
     private PollingRealTimeService pollingRealTimeService;
 //===========================================
     @Autowired
     private PollingService pollingService;
-    
+
     @Autowired
     private PollingResultService pollingResultService;
-    
+
     @Autowired
     private PollingCommentService pollingCommentService;
 //------------測試---------------------------
@@ -85,91 +85,91 @@ public class PollingController {
         model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "pindex";
     }
-    
+
     @GetMapping("/addpolling")
     public ModelAndView addLecture() {
         return new ModelAndView("addPolling", "pollingForm", new Form());
     }
-    
+
     public static class Form {
-        
+
         private String question;
         private String option1;
         private String option2;
         private String option3;
         private String option4;
-        
+
         private String choice;
         private String questionRecord;
 
 //--------------for comment用-------------------
         private String comment;
-        
+
         public String getComment() {
             return comment;
         }
-        
+
         public void setComment(String comment) {
             this.comment = comment;
         }
-        
+
         public String getQuestionRecord() {
             return questionRecord;
         }
-        
+
         public void setQuestionRecord(String questionRecord) {
             this.questionRecord = questionRecord;
         }
-        
+
         public String getChoice() {
             return choice;
         }
-        
+
         public void setChoice(String choice) {
             this.choice = choice;
         }
-        
+
         public String getQuestion() {
             return question;
         }
-        
+
         public void setQuestion(String question) {
             this.question = question;
         }
-        
+
         public String getOption1() {
             return option1;
         }
-        
+
         public void setOption1(String option1) {
             this.option1 = option1;
         }
-        
+
         public String getOption2() {
             return option2;
         }
-        
+
         public void setOption2(String option2) {
             this.option2 = option2;
         }
-        
+
         public String getOption3() {
             return option3;
         }
-        
+
         public void setOption3(String option3) {
             this.option3 = option3;
         }
-        
+
         public String getOption4() {
             return option4;
         }
-        
+
         public void setOption4(String option4) {
             this.option4 = option4;
         }
     }
-    
+
     @PostMapping("/addpolling")
     public String Create(Form form) throws IOException {
         long pollingId = pollingService.addPolling(form.getQuestion(), form.getOption1(), form.getOption2(), form.getOption3(), form.getOption4());
@@ -228,7 +228,7 @@ public class PollingController {
     public String polling(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
-        
+
         PollingRealTime realTimeRecord = new PollingRealTime(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRealTimeRepository.save(realTimeRecord);
 
@@ -252,7 +252,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalB = updatedResult.getTotalchoiceB() + 1;
                 updatedResult.setTotalchoiceB(totalB);
                 pollingResultRepository.save(updatedResult);
@@ -262,7 +262,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalC = updatedResult.getTotalchoiceC() + 1;
                 updatedResult.setTotalchoiceC(totalC);
                 pollingResultRepository.save(updatedResult);
@@ -272,7 +272,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalD = updatedResult.getTotalchoiceD() + 1;
                 updatedResult.setTotalchoiceD(totalD);
                 pollingResultRepository.save(updatedResult);
@@ -286,7 +286,7 @@ public class PollingController {
 
     @PostMapping(value = "/{pollingId}", params = "comment")
     public String comment(Form form, Principal principal) {
-        
+
         PollingComment comment = new PollingComment(form.getQuestionRecord(), principal.getName(), form.getComment());
         pollingCommentRepository.save(comment);
         return "redirect:/polling/pindex";
@@ -295,28 +295,28 @@ public class PollingController {
 
     @GetMapping("/edit/{pollingId}/{principal.getName()}")
     public ModelAndView edit(@PathVariable("pollingId") long pollingId, ModelMap model, Principal principal) {
-        
+
         Polling polling = pollingService.getQuestion(pollingId);
-        
+
         PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), polling.getQuestion());
         if (recordRealTime == null) {
             model.addAttribute("pollingDatabase", polling);
             return new ModelAndView("redirectToPolling", "redirect", new Form());
         }
-        
+
         model.addAttribute("currentChoice", recordRealTime.getChoice());
-        
+
         model.addAttribute("pollingDatabase", polling);
         return new ModelAndView("editPolling", "editForm", new Form());
     }
-    
+
     @PostMapping("/edit/{pollingId}/{principal.getName()}")
     public String edit(@PathVariable("pollingId") long pollingId, Form form, Principal principal) throws IOException {
-        
+
         PollingResult updatedResult = pollingResultRepository.findById(pollingId).orElse(null);
-        
+
         PollingRealTime recordRealTime = pollingRealTimeService.getUser(principal.getName(), form.questionRecord);
-        
+
         switch (recordRealTime.getChoice()) {
             case ("A"):
                 /*if (updatedResult == null) {
@@ -331,7 +331,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalB = updatedResult.getTotalchoiceB() - 1;
                 updatedResult.setTotalchoiceB(totalB);
                 pollingResultRepository.save(updatedResult);
@@ -341,7 +341,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalC = updatedResult.getTotalchoiceC() - 1;
                 updatedResult.setTotalchoiceC(totalC);
                 pollingResultRepository.save(updatedResult);
@@ -351,7 +351,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalD = updatedResult.getTotalchoiceD() - 1;
                 updatedResult.setTotalchoiceD(totalD);
                 pollingResultRepository.save(updatedResult);
@@ -359,9 +359,9 @@ public class PollingController {
             default:
                 break;
         }
-        
+
         pollingRealTimeService.updatePollingRealTime(principal.getName(), form.getQuestionRecord(), form.getChoice());
-        
+
         switch (form.getChoice()) {
             case ("A"):
                 /*if (updatedResult == null) {
@@ -376,7 +376,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalB = updatedResult.getTotalchoiceB() + 1;
                 updatedResult.setTotalchoiceB(totalB);
                 pollingResultRepository.save(updatedResult);
@@ -386,7 +386,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalC = updatedResult.getTotalchoiceC() + 1;
                 updatedResult.setTotalchoiceC(totalC);
                 pollingResultRepository.save(updatedResult);
@@ -396,7 +396,7 @@ public class PollingController {
                 /*if (updatedResult == null) {
                     throw new TicketNotFound();
                 }*/
-                
+
                 int totalD = updatedResult.getTotalchoiceD() + 1;
                 updatedResult.setTotalchoiceD(totalD);
                 pollingResultRepository.save(updatedResult);
@@ -404,23 +404,37 @@ public class PollingController {
             default:
                 break;
         }
-        
+
         PollingRecord record = new PollingRecord(principal.getName(), form.getQuestionRecord(), form.getChoice());
         pollingRecordRepository.save(record);
         return "redirect:/polling/pindex";
     }
-    
+
     @GetMapping("/delete/{pollingId}")
     public String deletePolling(@PathVariable("pollingId") long pollingId) {
         pollingService.delete(pollingId);
         return "redirect:/polling/pindex";
     }
-    
+
+    @GetMapping("/votinghistory")
+    public ModelAndView votingHistory(ModelMap model, Principal principal) {
+        List<PollingRecord> pollingRecord = pollingRecordRepository.findAll();
+        model.addAttribute("pollingRecordDatabase", pollingRecord);
+        return new ModelAndView("votingHistory", "votingHistoryForm", new Form());
+    }
+
+    @GetMapping("/commenthistory")
+    public ModelAndView commentHistory(ModelMap model, Principal principal) {
+        List<PollingComment> pollingComment = pollingCommentRepository.findAll();
+        model.addAttribute("pollingCommentDatabase", pollingComment);
+        return new ModelAndView("pollingCommentHistory", "pollingCommentForm", new Form());
+    }
+
     @GetMapping("/delete/comment/{commentId}")
     public String deletePollingComment(@PathVariable("commentId") long commentId) {
         PollingComment deletedPolling = pollingCommentRepository.findById(commentId).orElse(null);
         pollingCommentRepository.delete(deletedPolling);
         return "redirect:/polling/pindex";
     }
-    
+
 }

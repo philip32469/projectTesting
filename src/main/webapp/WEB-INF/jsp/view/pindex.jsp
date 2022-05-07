@@ -70,5 +70,22 @@
             <a href="<c:url value="/editUser" />">Edit User Information</a><br /><br />
         </security:authorize>
 
+
+        <security:authorize access="hasRole('LECTURER')">   
+            <a href="<c:url value="/polling/votinghistory" />">Voting history</a><br /><br />
+        </security:authorize>
+
+        <security:authorize access="hasRole('LECTURER')">   
+            <a href="<c:url value="/polling/commenthistory" />">Comment history(polling)</a><br /><br />
+        </security:authorize>
+
+        <security:authorize access="hasRole('LECTURER')">   
+            <a href="<c:url value="/lecture/commenthistory" />">Comment history(course)</a><br /><br />
+        </security:authorize>
+
+
+
+
+
     </body>
 </html>

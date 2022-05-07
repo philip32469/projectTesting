@@ -19,12 +19,12 @@
 
             <c:otherwise>
                 <c:forEach items="${userDatabase}" var="user">
-                    ${user.fullname}  &nbsp  ${user.phonenumber}  &nbsp   ${user.address}
+                    ${user.username} &nbsp   ${user.fullname}  &nbsp  ${user.phonenumber}  &nbsp   ${user.address}  &nbsp   ${user.userrole}
                     <security:authorize access="hasRole('LECTURER')">            
-                        [<a href="<c:url value="/createStudent" />">Edit</a>]
+                        [<a href="<c:url value="/editUser/${user.username}" />">Edit</a>]
                     </security:authorize>
                     <security:authorize access="hasRole('LECTURER')">            
-                        [<a href="<c:url value="/createLecturer" />">Delete</a>]<br />
+                        [<a href="<c:url value="/editUser/delete/${user.username}" />">Delete</a>]<br />
                     </security:authorize>
                     <br /><br />
                 </c:forEach>
@@ -39,6 +39,8 @@
         <security:authorize access="hasRole('LECTURER')">            
             <a href="<c:url value="/createLecturer" />">Add Lecturer</a>
         </security:authorize>
-
+        <security:authorize access="hasRole('LECTURER')">            
+            <a href="<c:url value="" />">Go Back To index</a>
+        </security:authorize>
     </body>
 </html>

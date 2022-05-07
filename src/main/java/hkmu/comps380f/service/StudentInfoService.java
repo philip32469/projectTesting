@@ -3,6 +3,7 @@ package hkmu.comps380f.service;
 //import hkmu.comps380f.dao.TicketUserRepository;
 import hkmu.comps380f.dao.StudentInfoRepository;
 import hkmu.comps380f.model.StudentInfo;
+import java.io.IOException;
 //import hkmu.comps380f.model.TicketUser;
 //import hkmu.comps380f.model.UserRole;
 import java.util.ArrayList;
@@ -32,15 +33,36 @@ public class StudentInfoService implements UserDetailsService {
         }
         List<GrantedAuthority> authorities = new ArrayList<>();
         //for (StudentInfo role : studentInfo.getUserrole()) {
-            authorities.add(new SimpleGrantedAuthority(studentInfo.getUserrole()));
+        authorities.add(new SimpleGrantedAuthority(studentInfo.getUserrole()));
         //}
         return new User(studentInfo.getUsername(), studentInfo.getPassword(), authorities);
     }
-
-
 
     @Transactional
     public List<StudentInfo> getUserList() {
         return studentInfoRepo.findAll();
     }
+
+    @Transactional
+    public StudentInfo getUser(String username) {
+        return studentInfoRepo.findByUserName(username);
+    }
+
+    @Transactional
+    public void updateUser(String username,
+            String newFullname, String newPhonenumber, String newAddress, String newUserRole)
+            throws IOException {
+        StudentInfo updatedUser = studentInfoRepo.findByUserName(username);
+        /*if (updatedPollingRealTime == null) {
+            throw IOException;
+        }*/
+
+        updatedUser.setFullname(newFullname);
+        updatedUser.setPhonenumber(newPhonenumber);
+        updatedUser.setAddress(newAddress);
+        updatedUser.setUserrole(newUserRole);
+
+        studentInfoRepo.save(updatedUser);
+    }
+
 }
