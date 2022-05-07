@@ -26,6 +26,7 @@
     </b:bean> 
 
     <http>
+        <intercept-url pattern="/lecture/pindex" access="hasAnyRole('ADMIN','STUDENT','LECTURER','GUEST')" />
         <intercept-url pattern="/polling/**" access="hasAnyRole('USER','ADMIN', 'STUDENT','LECTURER')" />
         <intercept-url pattern="/lecture/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" />
         <form-login login-page="/cslogin" login-processing-url="/cslogin"
@@ -38,7 +39,7 @@
     <context:annotation-config />
     
     
-   <b:bean id="studentInfoService" class="hkmu.comps380f.service.StudentInfoService" />
+    <b:bean id="studentInfoService" class="hkmu.comps380f.service.StudentInfoService" />
 
     <authentication-manager>
         <authentication-provider user-service-ref="studentInfoService" />

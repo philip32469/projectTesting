@@ -20,6 +20,12 @@ public class LectureListService {
     }
 
     @Transactional
+    public LectureList getCourse(String coursecode) {
+        return LectureListRepo.findByCourseCode(coursecode);
+    }
+
+
+    @Transactional
     public String addLectureList(String courseCode,
             String courseName) throws IOException {
         LectureList lectureList = new LectureList();

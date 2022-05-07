@@ -9,7 +9,7 @@
             <input type="submit" value="Log out" />
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-        <security:authorize access="hasAnyRole('ADMIN', 'LECTURER')">    
+        <security:authorize access="hasAnyRole('LECTURER')">    
             <h2>Add Lecture Note</h2>
             <form:form method="POST" enctype="multipart/form-data"
                        modelAttribute="ticketForm">
@@ -18,6 +18,8 @@
                 <input type="submit" value="Submit"/>
             </form:form>
         </security:authorize>
+
+
 
     </body>
 </html>

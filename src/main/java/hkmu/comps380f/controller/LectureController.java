@@ -5,6 +5,7 @@
 package hkmu.comps380f.controller;
 
 import hkmu.comps380f.dao.LectureListRepository;
+import hkmu.comps380f.model.LectureList;
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,7 +30,7 @@ public class LectureController {
     private LectureListService lectureListService;
 
 //關鍵
-   @Autowired
+    @Autowired
     private PollingService pollingService;
 
     @GetMapping({"", "/pindex"})
@@ -50,6 +52,16 @@ public class LectureController {
         //比Lecturer用
         private String courseCode;
         private String courseName;
+        //comment用
+        private String comment;
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
 
         public String getCourseCode() {
             return courseCode;
@@ -79,6 +91,13 @@ public class LectureController {
     public String viewCourse(ModelMap model) {
         model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "courseMaterial";
+    }
+
+    @GetMapping("/delete/{lectureId}")
+    public String deletePolling(@PathVariable("lectureId") String couserCode) {
+        LectureList course = lectureListService.getCourse(couserCode);
+        lectureListRepository.delete(course);
+        return "redirect:/lecture/pindex";
     }
 
 }

@@ -430,11 +430,6 @@ public class PollingController {
         return new ModelAndView("pollingCommentHistory", "pollingCommentForm", new Form());
     }
 
-    @GetMapping("/delete/comment/{commentId}")
-    public String deletePollingComment(@PathVariable("commentId") long commentId) {
-        PollingComment deletedPolling = pollingCommentRepository.findById(commentId).orElse(null);
-        pollingCommentRepository.delete(deletedPolling);
-        return "redirect:/polling/pindex";
-    }
+
 
 }

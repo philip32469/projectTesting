@@ -21,6 +21,7 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <input type="submit" value="Log In"/>
             <a href="<c:url value="/registration" />">Registration</a>
+            <br />If you want to enter as a guest, please enter username:guest, password:guest
         </form>
     </body>
 </html>

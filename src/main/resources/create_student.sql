@@ -8,3 +8,6 @@ CREATE TABLE student (
     userrole VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (username)
 );
+
+
+INSERT INTO student(username,password,fullname,phonenumber,address,userrole) VALUES ('guest','{noop}guest','guest','guest','guest','ROLE_GUEST' );
