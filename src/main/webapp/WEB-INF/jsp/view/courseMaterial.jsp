@@ -43,6 +43,8 @@
             </c:choose>
         </c:forEach>   
 
+        <br /><a href="<c:url value="/lecture" />">Go Back To index</a>
+
 
     </body>
 </html>

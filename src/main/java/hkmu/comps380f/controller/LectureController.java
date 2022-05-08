@@ -111,6 +111,16 @@ public class LectureController {
         return new ModelAndView("courseMaterial", "viewlectureForm", new Form());
     }
 
+
+//試ttachments
+    @PostMapping(value = "/coursematerial/{courseCode}")
+    public String attachments(Form form, Principal principal) {
+
+        //CourseComment comment = new CourseComment(form.getCourseName(), principal.getName(), form.getComment());
+        //courseCommentRepository.save(comment);
+        return "redirect:/polling/pindex";
+    }
+
     @PostMapping(value = "/coursematerial/{courseCode}", params = "comment")
     public String comment(Form form, Principal principal) {
 

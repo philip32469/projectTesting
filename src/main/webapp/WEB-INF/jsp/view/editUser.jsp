@@ -40,7 +40,7 @@
             <a href="<c:url value="/createLecturer" />">Add Lecturer</a>
         </security:authorize>
         <security:authorize access="hasRole('LECTURER')">            
-            <br /><a href="<c:url value="" />">Go Back To index</a>
+            <br /><a href="<c:url value="/lecture" />">Go Back To index</a>
         </security:authorize>
     </body>
 </html>
