@@ -10,14 +10,14 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
-        <h2>Comment History(polling)</h2>
+        <h2>Comment History(course)</h2>
 
 
-        <c:forEach items="${pollingCommentDatabase}" var="pollingComment">
+        <c:forEach items="${courseCommentDatabase}" var="courseComment">
 
-            ${pollingComment.question}: ${pollingComment.username}: ${pollingComment.comment}<br />   <br />         
+            ${courseComment.course}: ${courseComment.username}: ${pollingComment.comment}<br />   <br />         
 
-        </c:forEach>    
+        </c:forEach>     
         <security:authorize access="hasRole('LECTURER')">            
             <br /><a href="<c:url value="" />">Go Back To index</a>
         </security:authorize>

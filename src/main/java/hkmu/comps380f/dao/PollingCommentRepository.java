@@ -14,4 +14,8 @@ public interface PollingCommentRepository extends JpaRepository<PollingComment, 
 
     @Query(value = "select * from pollingcomment  where username = ?1", nativeQuery = true)
     public List<PollingComment> findAllByQuestion(String question);
+
+
+    @Query(value = "select * from pollingcomment  where id = ?1", nativeQuery = true)
+    public PollingComment findById(long id);
 }

@@ -31,7 +31,7 @@
             </c:otherwise>
         </c:choose>
 
-        <br />Add User
+        <br />Add User<br />
         <security:authorize access="hasRole('LECTURER')">            
             <a href="<c:url value="/createStudent" />">Add Student</a>
         </security:authorize>
@@ -40,7 +40,7 @@
             <a href="<c:url value="/createLecturer" />">Add Lecturer</a>
         </security:authorize>
         <security:authorize access="hasRole('LECTURER')">            
-            <a href="<c:url value="" />">Go Back To index</a>
+            <br /><a href="<c:url value="" />">Go Back To index</a>
         </security:authorize>
     </body>
 </html>

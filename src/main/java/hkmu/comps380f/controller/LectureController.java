@@ -4,11 +4,16 @@
  */
 package hkmu.comps380f.controller;
 
+import hkmu.comps380f.dao.CourseCommentRepository;
 import hkmu.comps380f.dao.LectureListRepository;
+import hkmu.comps380f.model.CourseComment;
 import hkmu.comps380f.model.LectureList;
+import hkmu.comps380f.service.CourseCommentService;
 import hkmu.comps380f.service.LectureListService;
 import hkmu.comps380f.service.PollingService;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,12 +31,18 @@ public class LectureController {
     @Resource
     LectureListRepository lectureListRepository;
 
+    @Resource
+    CourseCommentRepository courseCommentRepository;
+
     @Autowired
     private LectureListService lectureListService;
 
 //關鍵
     @Autowired
     private PollingService pollingService;
+
+    @Autowired
+    private CourseCommentService courseCommentService;
 
     @GetMapping({"", "/pindex"})
     public String list(ModelMap model) {
@@ -88,16 +99,44 @@ public class LectureController {
     }
 
     @GetMapping("/coursematerial/{courseCode}")
-    public String viewCourse(ModelMap model) {
+    /*public String viewCourse(ModelMap model) {
         model.addAttribute("lectureDatabase", lectureListService.getLectureList());
         return "courseMaterial";
+    }*/
+    public ModelAndView viewLecture(@PathVariable("courseCode") String coursecode, ModelMap model) {
+        LectureList course = lectureListService.getCourse(coursecode);
+        List<CourseComment> comment = courseCommentRepository.findAll();
+        model.addAttribute("courseCommentDatabase", comment);
+        model.addAttribute("courseDatabase", course);
+        return new ModelAndView("courseMaterial", "viewlectureForm", new Form());
+    }
+
+    @PostMapping(value = "/coursematerial/{courseCode}", params = "comment")
+    public String comment(Form form, Principal principal) {
+
+        CourseComment comment = new CourseComment(form.getCourseName(), principal.getName(), form.getComment());
+        courseCommentRepository.save(comment);
+        return "redirect:/polling/pindex";
     }
 
     @GetMapping("/delete/{lectureId}")
-    public String deletePolling(@PathVariable("lectureId") String couserCode) {
+    public String deleteLecture(@PathVariable("lectureId") String couserCode) {
         LectureList course = lectureListService.getCourse(couserCode);
         lectureListRepository.delete(course);
         return "redirect:/lecture/pindex";
+    }
+
+    @GetMapping("/delete/comment/{courseComment.id}")
+    public String deleteLectureComment(@PathVariable("courseComment.id") long commentId) {
+        courseCommentService.deleteCourseComment(commentId);
+        return "redirect:/lecture/pindex";
+    }
+
+    @GetMapping("/commenthistory")
+    public ModelAndView courseCommentHistory(ModelMap model) {
+        List<CourseComment> courseComment = courseCommentRepository.findAll();
+        model.addAttribute("courseCommentDatabase", courseComment);
+        return new ModelAndView("courseCommentHistory", "courseCommentForm", new Form());
     }
 
 }

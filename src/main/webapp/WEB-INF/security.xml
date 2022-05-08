@@ -26,9 +26,9 @@
     </b:bean> 
 
     <http>
-        <intercept-url pattern="/lecture/pindex" access="hasAnyRole('ADMIN','STUDENT','LECTURER','GUEST')" />
-        <intercept-url pattern="/polling/**" access="hasAnyRole('USER','ADMIN', 'STUDENT','LECTURER')" />
-        <intercept-url pattern="/lecture/**" access="hasAnyRole('ADMIN','STUDENT','LECTURER')" />
+        <intercept-url pattern="/lecture/pindex" access="hasAnyRole('STUDENT','LECTURER','GUEST')" />
+        <intercept-url pattern="/polling/**" access="hasAnyRole('STUDENT','LECTURER')" />
+        <intercept-url pattern="/lecture/**" access="hasAnyRole('STUDENT','LECTURER')" />
         <form-login login-page="/cslogin" login-processing-url="/cslogin"
                     authentication-failure-url="/cslogin?error" />
         <logout logout-url="/cslogout" logout-success-url="/cslogin?logout"

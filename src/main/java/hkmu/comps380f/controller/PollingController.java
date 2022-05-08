@@ -416,6 +416,13 @@ public class PollingController {
         return "redirect:/polling/pindex";
     }
 
+//delete comment
+    @GetMapping("/delete/comment/{comment.id}")
+    public String deletePollingComment(@PathVariable("comment.id") long commentId) {
+        pollingCommentService.deleteComment(commentId);
+        return "redirect:/polling/pindex";
+    }
+
     @GetMapping("/votinghistory")
     public ModelAndView votingHistory(ModelMap model, Principal principal) {
         List<PollingRecord> pollingRecord = pollingRecordRepository.findAll();
@@ -429,7 +436,5 @@ public class PollingController {
         model.addAttribute("pollingCommentDatabase", pollingComment);
         return new ModelAndView("pollingCommentHistory", "pollingCommentForm", new Form());
     }
-
-
 
 }

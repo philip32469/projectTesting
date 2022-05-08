@@ -73,7 +73,7 @@
         <c:forEach items="${commentDatabase}" var="comment">
             <c:choose>
                 <c:when test="${comment.question == pollingDatabase.question}">
-                    ${comment.id}: ${comment.username}: ${comment.comment}             
+                    <br />${comment.id}: ${comment.username}: ${comment.comment}             
                     <security:authorize access="hasRole('LECTURER')">            
                         <a href="<c:url value="/polling/delete/comment/${comment.id}" />">Delete</a><br />
                     </security:authorize>

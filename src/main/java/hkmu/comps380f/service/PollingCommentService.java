@@ -29,12 +29,10 @@ public class PollingCommentService {
     }
 
     @Transactional
-    public void delete(String username, String question) {
-        //PollingComment deletedPolling = pollingCommentRepo.findAllByUserNameAndQuestion(username, question);
-        /*if (deletedTicket == null) {
-            throw new TicketNotFound();
-        }*/
-        //PollingRepo.delete(deletedPolling);
+    public void deleteComment(long id) {
+        PollingComment deletedComment = pollingCommentRepo.findById(id);
+
+        pollingCommentRepo.delete(deletedComment);
     }
     
 }
